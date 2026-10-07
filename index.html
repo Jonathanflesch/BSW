@@ -502,8 +502,8 @@
               <a href="https://wa.me/5500000000000" class="btn btn-contorno" target="_blank" rel="noopener">WhatsApp</a>
             </div>
 
-            <!-- Envio via FormSubmit (formsubmit.co): as mensagens chegam em contato@bswmedicao.com.br -->
-            <form class="formulario" id="form-contato" action="https://formsubmit.co/contato@bswmedicao.com.br" method="POST">
+            <!-- Envio via Web3Forms (web3forms.com): o destino é o e-mail cadastrado na chave de acesso -->
+            <form class="formulario" id="form-contato" action="https://api.web3forms.com/submit" method="POST">
               <div class="campos-linha">
                 <div class="campo">
                   <label for="nome">Nome</label>
@@ -522,9 +522,10 @@
                 <label for="mensagem">Mensagem</label>
                 <textarea id="mensagem" name="mensagem" required></textarea>
               </div>
-              <input type="hidden" name="_subject" value="Novo contato pelo site BSW Medição">
-              <input type="hidden" name="_template" value="table">
-              <input type="text" name="_honey" class="armadilha" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <input type="hidden" name="access_key" value="fa019933-463e-414c-95ee-a7fa149d9473">
+              <input type="hidden" name="subject" value="Novo contato pelo site BSW Medição">
+              <input type="hidden" name="from_name" value="Site BSW Medição">
+              <input type="checkbox" name="botcheck" class="armadilha" tabindex="-1" autocomplete="off" aria-hidden="true">
               <button type="submit" class="btn">Enviar mensagem</button>
               <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
             </form>
@@ -607,13 +608,14 @@
       botao.textContent = "Enviando...";
       status.textContent = "";
       status.className = "form-status";
-      fetch("https://formsubmit.co/ajax/contato@bswmedicao.com.br", {
+      var dados = Object.fromEntries(new FormData(form));
+      if (form.botcheck.checked) dados.botcheck = true; else delete dados.botcheck;
+      fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        // Envia como JSON: no formato FormData o FormSubmit falha com acentos (á, ç, ã...)
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        body: JSON.stringify(dados)
       })
-        .then(function (r) { return r.json().then(function (d) { if (!r.ok || String(d.success) !== "true") throw d; }); })
+        .then(function (r) { return r.json().then(function (d) { if (!r.ok || !d.success) throw d; }); })
         .then(function () {
           form.innerHTML =
             '<div class="form-sucesso">' +
