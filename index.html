@@ -609,8 +609,9 @@
       status.className = "form-status";
       fetch("https://formsubmit.co/ajax/contato@bswmedicao.com.br", {
         method: "POST",
-        headers: { "Accept": "application/json" },
-        body: new FormData(form)
+        // Envia como JSON: no formato FormData o FormSubmit falha com acentos (á, ç, ã...)
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
       })
         .then(function (r) { return r.json().then(function (d) { if (!r.ok || String(d.success) !== "true") throw d; }); })
         .then(function () {
