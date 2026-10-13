@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bswmedicao.com.br/sitemap.xml

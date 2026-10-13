@@ -14,7 +14,7 @@
   <meta property="og:locale" content="pt_BR">
   <meta property="og:url" content="https://bswmedicao.com.br/">
   <meta property="og:title" content="BSW Medição | Hidrômetros inteligentes">
-  <meta property="og:description" content="Medição de água conectada, precisa e em tempo real: leitura remota, alertas de vazamento e corte remoto.">
+  <meta property="og:description" content="Leia cada hidrômetro sem ir a campo: consumo em tempo real, alertas de vazamento e corte remoto.">
   <meta property="og:image" content="https://bswmedicao.com.br/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -51,7 +51,7 @@
     ]
   }
   </script>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='%231f40af'/%3E%3Ccircle cx='15.5' cy='15.5' r='3.8' fill='%236279c8'/%3E%3Ccircle cx='24.5' cy='24.5' r='6' fill='%231f40af'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='7' cy='7' r='5.5' fill='%231e40af'/%3E%3Ccircle cx='15.5' cy='15.5' r='3.8' fill='%236279c8'/%3E%3Ccircle cx='24.5' cy='24.5' r='6' fill='%231e40af'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -68,6 +68,8 @@
       --fundo-alt: #f2f8fc;
       --borda: #dde8f0;
       --raio: 14px;
+      --saida: cubic-bezier(0.23, 1, 0.32, 1);        /* ease-out forte: respostas de UI */
+      --vai-e-volta: cubic-bezier(0.77, 0, 0.175, 1);  /* ease-in-out forte: movimento na tela */
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -77,7 +79,14 @@
       background: var(--fundo);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      caret-color: var(--cobalto); accent-color: var(--cobalto);
+      -webkit-tap-highlight-color: transparent;
     }
+    ::selection { background: var(--cobalto); color: #fff; }
+    :focus-visible { outline: 2px solid var(--cobalto); outline-offset: 3px; }
+    .hero :focus-visible, .cta :focus-visible { outline-color: #fff; }
+    h1, h2 { text-wrap: balance; }
+    p { text-wrap: pretty; }
     a { color: inherit; text-decoration: none; }
     .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 24px; }
 
@@ -96,13 +105,14 @@
     .nav-links a:not(.btn):hover { color: var(--cobalto); }
 
     .btn {
-      display: inline-block; padding: 12px 24px; border-radius: 999px;
+      display: inline-block; padding: 12px 24px; border-radius: 999px; white-space: nowrap;
       background: var(--cobalto); color: #fff; font-weight: 600; font-size: .95rem;
-      transition: background .2s, color .2s, border-color .2s, transform .2s;
+      transition: background .2s, color .2s, border-color .2s, transform 160ms var(--saida);
     }
-    .btn:hover { background: #18348f; transform: translateY(-1px); }
-    .btn-claro { background: #fff; color: var(--azul-escuro); }
-    .btn-claro:hover { background: var(--cobalto); color: #fff; }
+    .btn:hover { background: #18348f; }
+    .btn:active { transform: scale(0.97); }
+    .btn-claro { background: #fff; color: var(--azul-escuro); border: 2px solid #fff; }
+    .btn-claro:hover { background: var(--cobalto); border-color: var(--cobalto); color: #fff; }
     .btn-contorno { background: transparent; border: 2px solid rgba(255,255,255,.6); color: #fff; }
     .btn-contorno:hover { background: var(--cobalto); border-color: var(--cobalto); }
 
@@ -154,19 +164,7 @@
       100% { transform: translate(-10px,-95vh); opacity: 0; }
     }
     .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; position: relative; z-index: 1; }
-    .selo {
-      display: inline-block; padding: 6px 14px; border-radius: 999px;
-      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
-      font-size: .82rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 22px;
-    }
     .hero h1 { font-size: clamp(2.1rem, 4.5vw, 3.3rem); line-height: 1.12; font-weight: 800; margin-bottom: 20px; }
-    .hero h1 em {
-      font-style: normal; color: var(--ciano);
-      background: linear-gradient(90deg, var(--ciano), #a8f0ff, var(--ciano), #a8f0ff);
-      background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-      animation: reflexo 7s linear infinite;
-    }
-    @keyframes reflexo { to { background-position: -300% 0; } }
     .hero p { font-size: 1.15rem; color: rgba(255,255,255,.85); max-width: 540px; margin-bottom: 34px; }
     .hero-acoes { display: flex; gap: 14px; flex-wrap: wrap; }
 
@@ -178,16 +176,12 @@
     .ao-vivo { display: flex; align-items: center; gap: 8px; color: #7ff0b4; font-weight: 600; }
     .ao-vivo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7ff0b4; animation: pulso 1.6s infinite; }
     @keyframes pulso { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-    .leitura { font-size: 2.6rem; font-weight: 800; letter-spacing: -.02em; }
+    .leitura { font-size: 2.6rem; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
     .leitura small { font-size: 1rem; font-weight: 500; color: rgba(255,255,255,.7); }
     .grafico { display: flex; align-items: flex-end; gap: 8px; height: 110px; margin: 22px 0; }
     .grafico div {
       flex: 1; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, var(--ciano), rgba(46,196,230,.35));
-      transform-origin: bottom; animation: nivel 3.2s ease-in-out infinite alternate;
     }
-    .grafico div:nth-child(2n) { animation-delay: -.8s; animation-duration: 3.8s; }
-    .grafico div:nth-child(3n) { animation-delay: -1.6s; animation-duration: 2.9s; }
-    @keyframes nivel { from { transform: scaleY(.86); } to { transform: scaleY(1.04); } }
     .painel-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .painel-info div { background: rgba(255,255,255,.08); border-radius: 12px; padding: 12px 14px; font-size: .82rem; color: rgba(255,255,255,.75); }
     .painel-info strong { display: block; color: #fff; font-size: 1rem; }
@@ -204,8 +198,7 @@
     .alt::after { bottom: -59px; transform: scaleY(-1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30C240 0 480 0 720 30S1200 60 1440 30V60H0Z' fill='%23f2f8fc'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30C240 0 480 0 720 30S1200 60 1440 30V60H0Z' fill='%23d9ecf7' fill-opacity='.6'/%3E%3C/svg%3E"); animation-direction: reverse; }
     @keyframes correr { from { background-position: 0 bottom, 0 bottom; } to { background-position: -1440px bottom, 1440px bottom; } }
     .titulo-secao { text-align: center; max-width: 680px; margin: 0 auto 56px; }
-    .titulo-secao .rotulo { color: var(--azul); font-weight: 700; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; }
-    .titulo-secao h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.2; margin: 10px 0 14px; color: var(--azul-escuro); }
+    .titulo-secao h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.2; margin: 0 0 14px; color: var(--azul-escuro); }
     .titulo-secao p { color: var(--texto-suave); font-size: 1.05rem; }
 
     /* 5 cards: 3 na primeira linha e 2 centralizados na segunda */
@@ -215,9 +208,12 @@
     .cards > .card:nth-child(5) { grid-column: 4 / 6; }
     .card {
       background: #fff; border: 1px solid var(--borda); border-radius: var(--raio); padding: 30px;
-      transition: transform .25s, box-shadow .25s, border-color .25s;
+      transition: transform .25s var(--saida), box-shadow .25s var(--saida), border-color .25s;
     }
-    .card:hover { transform: translateY(-4px); border-color: var(--cobalto); box-shadow: 0 16px 40px rgba(30,64,175,.15); }
+    .card:hover { border-color: var(--cobalto); }
+    @media (hover: hover) and (pointer: fine) {
+      .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(30,64,175,.15); }
+    }
     .icone {
       width: 50px; height: 50px; border-radius: 12px; display: grid; place-items: center;
       background: #e6f4fb; color: var(--azul); margin-bottom: 18px;
@@ -228,19 +224,23 @@
     .card p { color: var(--texto-suave); font-size: .96rem; }
 
     .passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; counter-reset: passo; }
-    .passo { text-align: center; padding: 0 12px; }
+    .passo { text-align: center; padding: 0 12px; position: relative; isolation: isolate; }
     .passo::before {
       counter-increment: passo; content: counter(passo);
       display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 18px;
       border-radius: 50%; background: var(--cobalto); color: #fff; font-weight: 800; font-size: 1.3rem;
       box-shadow: 0 0 0 8px #e8ecf8;
-      animation: ondulacao 3s ease-out infinite;
     }
-    .passo:nth-child(2)::before { animation-delay: 1s; }
-    .passo:nth-child(3)::before { animation-delay: 2s; }
+    .passo::after {
+      content: ""; position: absolute; top: 0; left: 50%; width: 56px; height: 56px; margin-left: -28px;
+      border-radius: 50%; background: rgba(30,64,175,.35); z-index: -1; pointer-events: none;
+      animation: ondulacao 3s var(--saida) infinite;
+    }
+    .passo:nth-child(2)::after { animation-delay: 1s; }
+    .passo:nth-child(3)::after { animation-delay: 2s; }
     @keyframes ondulacao {
-      from { box-shadow: 0 0 0 8px #e8ecf8, 0 0 0 8px rgba(30,64,175,.35); }
-      to { box-shadow: 0 0 0 8px #e8ecf8, 0 0 0 30px rgba(30,64,175,0); }
+      from { transform: scale(1.29); opacity: 1; }
+      to { transform: scale(2.07); opacity: 0; }
     }
     .passo h3 { color: var(--azul-escuro); margin-bottom: 8px; font-size: 1.1rem; }
     .passo p { color: var(--texto-suave); }
@@ -280,14 +280,17 @@
     .campo { margin-bottom: 14px; }
     .campo label { display: block; font-size: .85rem; font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; }
     .campo input, .campo textarea {
-      width: 100%; font: inherit; font-size: .95rem; color: var(--texto);
-      padding: 11px 14px; border: 1px solid var(--borda); border-radius: 10px; background: var(--fundo-alt);
+      width: 100%; font: inherit; font-size: 1rem; color: var(--texto);
+      padding: 11px 14px; border: 1px solid #8a9fb0; border-radius: 10px; background: var(--fundo-alt);
       transition: border-color .2s, box-shadow .2s, background .2s;
     }
     .campo textarea { min-height: 120px; resize: vertical; }
     .campo input:focus, .campo textarea:focus {
       outline: none; border-color: var(--cobalto); background: #fff; box-shadow: 0 0 0 3px rgba(30,64,175,.15);
     }
+    .formulario .campo .erro-campo { margin: 6px 0 0; max-width: none; font-size: .85rem; color: #b42318; }
+    .campo .erro-campo:empty { display: none; }
+    .campo [aria-invalid="true"] { border-color: #b42318; }
     .formulario .btn { width: 100%; border: 0; cursor: pointer; font-family: inherit; margin-top: 4px; }
     .formulario .btn:disabled { opacity: .7; cursor: wait; transform: none; }
     .armadilha { position: absolute; left: -9999px; }
@@ -304,11 +307,12 @@
     footer .logo img { height: 48px; }
 
     /* Elementos que surgem ao rolar */
-    .js .revelar { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); }
+    .js .revelar { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--saida), transform .8s var(--saida); }
     .js .revelar.visivel { opacity: 1; transform: none; }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
+      *, *::before, *::after { animation: none !important; transition-property: opacity, color, background-color, border-color !important; }
+      .btn:active { transform: none; }
       .js .revelar { opacity: 1; transform: none; }
       .bolhas { display: none; }
     }
@@ -331,6 +335,8 @@
       .campos-linha { grid-template-columns: 1fr; gap: 0; }
       .formulario { padding: 22px; }
       .painel { padding: 20px; }
+      .logo img { height: 44px; }
+      .nav-links .btn { padding: 10px 18px; }
     }
   </style>
 </head>
@@ -345,7 +351,7 @@
         <a href="#beneficios">Benefícios</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#aplicacoes">Aplicações</a>
-        <a href="#contato" class="btn">Fale conosco</a>
+        <a href="#contato" class="btn">Solicitar contato</a>
       </nav>
     </div>
   </header>
@@ -354,9 +360,8 @@
     <section class="hero">
       <div class="container hero-grid">
         <div>
-          <span class="selo">Hidrômetros inteligentes</span>
-          <h1>Medição de água <em>conectada</em>, precisa e em tempo real.</h1>
-          <p>A BSW Medição leva a internet das coisas para a gestão hídrica. Acompanhe o consumo, receba alertas de vazamento e elimine a leitura manual.</p>
+          <h1>Leia cada hidrômetro sem ir a campo.</h1>
+          <p>A BSW Medição leva a internet das coisas para a gestão hídrica com hidrômetros inteligentes. Acompanhe o consumo, receba alertas de vazamento e elimine a leitura manual.</p>
           <div class="hero-acoes">
             <a href="#contato" class="btn btn-claro">Solicitar contato</a>
             <a href="#como-funciona" class="btn btn-contorno">Como funciona</a>
@@ -407,35 +412,34 @@
     <section id="beneficios">
       <div class="container">
         <div class="titulo-secao revelar">
-          <span class="rotulo">Benefícios</span>
           <h2>Mais controle sobre cada litro</h2>
-          <p>Tecnologia que transforma o hidrômetro em uma fonte de dados confiável para quem gerencia água.</p>
+          <p>O que muda na gestão quando cada hidrômetro envia os próprios dados.</p>
         </div>
         <div class="cards">
           <div class="card revelar">
             <div class="icone"><svg class="icone-animado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="12" cy="20" r="1"/><path pathLength="1" d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path pathLength="1" d="M5 12.55a11 11 0 0 1 14.08 0"/><path pathLength="1" d="M1.42 9a16 16 0 0 1 21.16 0"/></svg></div>
             <h3>Leitura remota</h3>
-            <p>Os dados chegam automaticamente, sem deslocamento de equipe e sem erros de anotação.</p>
+            <p>As leituras chegam automaticamente ao sistema. Sua equipe deixa de percorrer rotas de leitura e os erros de anotação acabam.</p>
           </div>
           <div class="card revelar">
             <div class="icone"><svg class="icone-animado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M6 20v-4"/><path pathLength="1" d="M12 20v-10"/><path pathLength="1" d="M18 20v-16"/></svg></div>
             <h3>Consumo em tempo real</h3>
-            <p>Acompanhe o histórico e o comportamento do consumo a qualquer hora, de qualquer lugar.</p>
+            <p>Veja o consumo de cada ponto hora a hora e compare com o histórico para entender o perfil de uso.</p>
           </div>
           <div class="card revelar">
             <div class="icone"><svg class="icone-animado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line pathLength="1" x1="12" y1="9" x2="12" y2="13"/><line pathLength="1" x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
             <h3>Alertas de vazamento</h3>
-            <p>Identifique consumos anormais rapidamente e evite desperdício e contas inesperadas.</p>
+            <p>Consumo fora do padrão gera um alerta, e sua equipe age no vazamento antes que ele vire perda de água e reclamação na conta.</p>
           </div>
           <div class="card revelar">
             <div class="icone"><svg class="icone-animado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="3" y="3" width="7" height="7"/><rect pathLength="1" x="14" y="3" width="7" height="7"/><rect pathLength="1" x="14" y="14" width="7" height="7"/><rect pathLength="1" x="3" y="14" width="7" height="7"/></svg></div>
             <h3>Medição individualizada</h3>
-            <p>Cada unidade paga pelo que consome, com transparência e dados para comprovar.</p>
+            <p>Cada unidade tem a própria leitura, e cada cobrança vem com o histórico de consumo para comprovar.</p>
           </div>
           <div class="card revelar">
             <div class="icone"><svg class="icone-animado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M18.36 6.64a9 9 0 1 1-12.73 0"/><path pathLength="1" d="M12 2v10"/></svg></div>
             <h3>Corte remoto</h3>
-            <p>Interrompa e restabeleça o fornecimento a distância, sem precisar enviar uma equipe ao local.</p>
+            <p>Interrompa e restabeleça o fornecimento a distância, sem enviar equipe ao local.</p>
           </div>
         </div>
       </div>
@@ -444,8 +448,7 @@
     <section id="como-funciona" class="alt">
       <div class="container">
         <div class="titulo-secao revelar">
-          <span class="rotulo">Como funciona</span>
-          <h2>Simples de implantar, fácil de acompanhar</h2>
+          <h2>Da instalação à gestão em três etapas</h2>
         </div>
         <div class="passos">
           <div class="passo revelar">
@@ -458,7 +461,7 @@
           </div>
           <div class="passo revelar">
             <h3>Gestão</h3>
-            <p>Você acompanha o consumo, recebe alertas e gera relatórios.</p>
+            <p>Você acompanha o consumo, recebe os alertas e aciona o corte remoto quando precisar.</p>
           </div>
         </div>
       </div>
@@ -467,7 +470,6 @@
     <section id="aplicacoes">
       <div class="container">
         <div class="titulo-secao revelar">
-          <span class="rotulo">Aplicações</span>
           <h2>Para quem precisa medir com confiança</h2>
         </div>
         <div class="segmentos">
@@ -496,37 +498,41 @@
           <div class="cta-grid revelar">
             <div>
               <h2>Vamos modernizar a sua medição?</h2>
-              <p>Fale com a equipe BSW Medição e descubra como os hidrômetros inteligentes podem atender ao seu projeto.</p>
+              <p>Conte o tamanho da sua rede ou do seu projeto. A equipe comercial da BSW Medição responde por e-mail com os próximos passos.</p>
               <p class="cta-alternativa">Prefere conversar agora?</p>
               <!-- TODO: confirmar número de WhatsApp real -->
               <a href="https://wa.me/5500000000000" class="btn btn-contorno" target="_blank" rel="noopener">WhatsApp</a>
             </div>
 
             <!-- Envio via Web3Forms (web3forms.com): o destino é o e-mail cadastrado na chave de acesso -->
-            <form class="formulario" id="form-contato" action="https://api.web3forms.com/submit" method="POST">
+            <form class="formulario" id="form-contato" action="https://api.web3forms.com/submit" method="POST" novalidate>
               <div class="campos-linha">
                 <div class="campo">
                   <label for="nome">Nome</label>
-                  <input id="nome" name="nome" type="text" autocomplete="given-name" required>
+                  <input id="nome" name="nome" aria-describedby="erro-nome" type="text" autocomplete="given-name" required>
+                  <p class="erro-campo" id="erro-nome"></p>
                 </div>
                 <div class="campo">
                   <label for="empresa">Empresa</label>
-                  <input id="empresa" name="empresa" type="text" autocomplete="organization" required>
+                  <input id="empresa" name="empresa" aria-describedby="erro-empresa" type="text" autocomplete="organization" required>
+                  <p class="erro-campo" id="erro-empresa"></p>
                 </div>
               </div>
               <div class="campo">
                 <label for="email">E-mail</label>
-                <input id="email" name="email" type="email" autocomplete="email" required>
+                <input id="email" name="email" aria-describedby="erro-email" type="email" autocomplete="email" required>
+                <p class="erro-campo" id="erro-email"></p>
               </div>
               <div class="campo">
                 <label for="mensagem">Mensagem</label>
-                <textarea id="mensagem" name="mensagem" required></textarea>
+                <textarea id="mensagem" name="mensagem" aria-describedby="erro-mensagem" required></textarea>
+                <p class="erro-campo" id="erro-mensagem"></p>
               </div>
               <input type="hidden" name="access_key" value="fa019933-463e-414c-95ee-a7fa149d9473">
               <input type="hidden" name="subject" value="Novo contato pelo site BSW Medição">
               <input type="hidden" name="from_name" value="Site BSW Medição">
               <input type="checkbox" name="botcheck" class="armadilha" tabindex="-1" autocomplete="off" aria-hidden="true">
-              <button type="submit" class="btn">Enviar mensagem</button>
+              <button type="submit" class="btn">Solicitar contato comercial</button>
               <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
             </form>
           </div>
@@ -578,19 +584,22 @@
     document.querySelectorAll(".icone-animado").forEach(function (svg) {
       var partes = svg.children;
       var card = svg.closest(".card, .segmento");
-      if (!card || !svg.animate || semMovimento) return;
+      if (!card || !svg.animate || semMovimento || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      var desenhando = false;
       var n = partes.length;
       var fase = (n - 1) * 0.1 + 0.3; // segundos para todas as partes se apagarem
       var total = fase * 2;
       card.addEventListener("mouseenter", function () {
+        if (desenhando) return;
+        desenhando = true;
+        setTimeout(function () { desenhando = false; }, total * 1000);
         Array.prototype.forEach.call(partes, function (parte, i) {
           var atraso = i * 0.1;
-          parte.getAnimations().forEach(function (a) { a.cancel(); });
           parte.animate([
             { offset: 0, strokeDashoffset: 0, opacity: 1 },
-            { offset: atraso / total, strokeDashoffset: 0, opacity: 1, easing: "ease-in-out" },
+            { offset: atraso / total, strokeDashoffset: 0, opacity: 1, easing: "cubic-bezier(0.77, 0, 0.175, 1)" },
             { offset: (atraso + 0.3) / total, strokeDashoffset: 1, opacity: 0 },
-            { offset: (fase + atraso) / total, strokeDashoffset: 1, opacity: 0, easing: "ease-in-out" },
+            { offset: (fase + atraso) / total, strokeDashoffset: 1, opacity: 0, easing: "cubic-bezier(0.77, 0, 0.175, 1)" },
             { offset: (fase + atraso + 0.3) / total, strokeDashoffset: 0, opacity: 1 },
             { offset: 1, strokeDashoffset: 0, opacity: 1 }
           ], { duration: total * 1000 });
@@ -600,8 +609,30 @@
 
     // Formulário de contato: envia sem sair da página e mostra o resultado
     var form = document.getElementById("form-contato");
+    var avisos = {
+      nome: "Informe seu nome.",
+      empresa: "Informe o nome da empresa.",
+      email: "Informe um e-mail válido, como nome@empresa.com.br.",
+      mensagem: "Escreva sua mensagem."
+    };
+    function conferir(campo) {
+      var invalido = !campo.value.trim() || !campo.checkValidity();
+      document.getElementById("erro-" + campo.name).textContent = invalido ? avisos[campo.name] : "";
+      if (invalido) campo.setAttribute("aria-invalid", "true"); else campo.removeAttribute("aria-invalid");
+      return !invalido;
+    }
+    Object.keys(avisos).forEach(function (nome) {
+      form[nome].addEventListener("blur", function () { if (this.value) conferir(this); });
+      form[nome].addEventListener("input", function () { if (this.hasAttribute("aria-invalid")) conferir(this); });
+    });
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      var primeiroErro = null;
+      Object.keys(avisos).forEach(function (nome) {
+        if (!conferir(form[nome]) && !primeiroErro) primeiroErro = form[nome];
+      });
+      if (primeiroErro) { primeiroErro.focus(); return; }
       var botao = form.querySelector("button[type=submit]");
       var status = document.getElementById("form-status");
       botao.disabled = true;
@@ -620,13 +651,13 @@
           form.innerHTML =
             '<div class="form-sucesso">' +
               '<div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-              '<h3>Mensagem enviada!</h3>' +
+              '<h3>Mensagem enviada.</h3>' +
               '<p>Obrigado pelo contato. Nossa equipe vai responder em breve no e-mail informado.</p>' +
             '</div>';
         })
         .catch(function () {
           botao.disabled = false;
-          botao.textContent = "Enviar mensagem";
+          botao.textContent = "Solicitar contato comercial";
           status.className = "form-status erro";
           status.textContent = "Não foi possível enviar agora. Tente novamente ou escreva para contato@bswmedicao.com.br.";
         });
